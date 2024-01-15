@@ -31,6 +31,7 @@ class _ExpensesState extends State<Expenses> {
 
   void _openAddExpenseOverlay() {
     showModalBottomSheet(
+      useSafeArea: true, // does not use it as default
       isScrollControlled: true,
       context: context,
       builder: (ctx) => NewExpense(onAddExpense: _addExpense),
@@ -67,6 +68,8 @@ class _ExpensesState extends State<Expenses> {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+
     Widget mainContent = const Center(
       child: Text('No expenses found. Start addding some!'),
     );
@@ -88,15 +91,29 @@ class _ExpensesState extends State<Expenses> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          Chart(expenses: _registeredExpenses),
-          Expanded(
-            // list in list
-            child: mainContent,
-          )
-        ],
-      ),
+      body: width < 600
+          ? Column(
+              children: [
+                Chart(expenses: _registeredExpenses),
+                Expanded(
+                  // list in list
+                  child: mainContent,
+                )
+              ],
+            )
+          : Row(
+              // row is infinity as natural
+              children: [
+                Expanded(
+                  child: Chart(
+                      expenses: _registeredExpenses), // because infinity inside
+                ),
+                Expanded(
+                  // list in list
+                  child: mainContent,
+                )
+              ],
+            ),
     );
   }
 }
